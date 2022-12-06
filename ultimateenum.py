@@ -7,6 +7,9 @@ import json
 import random
 import dns.resolver
 from bs4 import BeautifulSoup
+import warnings
+
+warnings.filterwarnings("ignore")
 
 full_list = []
 work_queue = []
@@ -18,7 +21,7 @@ debug = 0
 def wayback(target):
  try:
   url = "https://web.archive.org/cdx/search/cdx?url=*.{}&output=json&collapse=urlkey".format(target)
-  res = json.loads(requests.get(url=url, timeout=30).text)
+  res = json.loads(requests.get(url=url, timeout=30, verify=False).text)
   domains_collected = []
   for resx in res[1:]:
    url = resx[2]
@@ -37,7 +40,7 @@ def wayback(target):
 def crtsh(target):
  try:
   url = "https://crt.sh/?q={}&output=json".format(target)
-  res = json.loads(requests.get(url=url, timeout=30).text)
+  res = json.loads(requests.get(url=url, timeout=30, verify=False).text)
   domains_collected = []
   for resx in res:
    if "name_value" in resx: domain = resx["name_value"]
@@ -51,7 +54,7 @@ def crtsh(target):
 def hackertarget(target):
  try:
   url = "https://api.hackertarget.com/hostsearch/?q={}".format(target)
-  r=requests.get(url=url, timeout=30)
+  r=requests.get(url=url, timeout=30, verify=False)
   domains_collected = []
   for i in r.text.splitlines():
    domain = i.split(",")[0]
@@ -63,7 +66,7 @@ def hackertarget(target):
 def urlscan(target):
  try:
   url = "https://urlscan.io/api/v1/search/?q=domain:{}".format(target)
-  res = json.loads(requests.get(url=url, timeout=30).text)
+  res = json.loads(requests.get(url=url, timeout=30, verify=False).text)
   domains_collected = []
   if not "results" in res: return []
   for resx in res["results"]:
@@ -126,7 +129,7 @@ def crawl():
  while len(full_list_copy):
   try:
    with tlock: current_domain = full_list_copy.pop(0)
-   r = requests.get(url="https://{}".format(current_domain), timeout=30)
+   r = requests.get(url="https://{}".format(current_domain), timeout=30, verify=False)
    soup = BeautifulSoup(r.text, "html.parser")
    lfinds = [
     ["a","href"],
