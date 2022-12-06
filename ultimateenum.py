@@ -13,7 +13,7 @@ work_queue = []
 
 tlock = threading.Lock()
 
-debug = 1
+debug = 0
 
 def wayback(target):
  try:
