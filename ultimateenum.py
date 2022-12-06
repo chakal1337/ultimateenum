@@ -157,31 +157,36 @@ def crawl():
 if len(sys.argv) < 3:
  print("<domain> <threads>")
  sys.exit(0)
+
 work_queue.append(sys.argv[1])
 full_list.append(sys.argv[1])
 main_domain = sys.argv[1]
 print(main_domain)
 threadcount = int(sys.argv[2])
+
 t=threading.Thread(target=fdomain, args=(main_domain,))
 t.start()
 t.join()
+
 while threading.active_count() > 2:
  time.sleep(0.1)
+
 full_wordlist = []
 for i in full_list:
  words = i.split(".")
  full_wordlist.extend(words)
 full_wordlist = list(set(full_wordlist))
 full_wordlist_original = list(full_wordlist)
+
 for word in full_wordlist_original:
  for word2 in full_wordlist_original:
   if word == word2: continue
   full_wordlist.append(f"{word}-{word2}")
   full_wordlist.append(f"{word}.{word2}")
 full_wordlist = list(set(full_wordlist))
-#if debug == 1: print(full_wordlist)
+
 full_list_copy = list(set(full_list))
-#if debug == 1: print(full_list_copy)
+
 threads = []
 for i in range(threadcount):
  t=threading.Thread(target=brute)
@@ -189,7 +194,9 @@ for i in range(threadcount):
  threads.append(t)
 for t in threads:
  t.join()
+
 full_list_copy = list(full_list)
+
 threads = []
 for i in range(threadcount):
  t=threading.Thread(target=crawl)
